@@ -25,6 +25,9 @@ end
 
 -- Shows the left frame GUI element
 function gui_show_frame(player)
+  local gui_frame = player.gui.left["fdp-gui-frame"]
+  if gui_frame then return end
+
   local gui_frame = player.gui.left.add{
     type = "frame",
     caption = {"fdp-gui-frame-caption"},
@@ -138,9 +141,21 @@ script.on_event(FDP_EVENTS.on_gui_clicked, function(event)
       if event.player.cursor_stack.name == "deconstruction-planner" then
         --normal, target, exclude
         local new_mode = nil
-        if global["config"][event.player.index]["mode"] == "normal" then new_mode = "target" end
-        if global["config"][event.player.index]["mode"] == "target" then new_mode = "exclude" end
-        if global["config"][event.player.index]["mode"] == "exclude" then new_mode = "normal" end
+        if global["config"][event.player.index]["mode"] == "normal" then
+          new_mode = "target"
+          global["config"][event.player.index]["eyedropping"] = false
+          gui_show_frame(event.player)
+        end
+        if global["config"][event.player.index]["mode"] == "target" then
+          new_mode = "exclude"
+          global["config"][event.player.index]["eyedropping"] = false
+          gui_show_frame(event.player)
+        end
+        if global["config"][event.player.index]["mode"] == "exclude" then
+          new_mode = "normal"
+          global["config"][event.player.index]["eyedropping"] = false
+          gui_hide_frame(event.player)
+        end
         game.raise_event(FDP_EVENTS.on_mode_changed, {player = event.player, mode = new_mode})
         return
       end
