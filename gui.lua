@@ -134,6 +134,17 @@ end
 
 -- Called when the player clicks the gui button
 script.on_event(FDP_EVENTS.on_gui_clicked, function(event)
+    if event.player.cursor_stack.valid_for_read then
+      if event.player.cursor_stack.name == "deconstruction-planner" then
+        --normal, target, exclude
+        local new_mode = nil
+        if global["config"][event.player.index]["mode"] == "normal" then new_mode = "target" end
+        if global["config"][event.player.index]["mode"] == "target" then new_mode = "exclude" end
+        if global["config"][event.player.index]["mode"] == "exclude" then new_mode = "normal" end
+        game.raise_event(FDP_EVENTS.on_mode_changed, {player = event.player, mode = new_mode})
+        return
+      end
+    end
     if event.player.gui.left["fdp-gui-frame"] then
       gui_hide_frame(event.player)
     else
